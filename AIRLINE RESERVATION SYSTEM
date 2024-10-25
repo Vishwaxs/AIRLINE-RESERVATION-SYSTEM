@@ -1,0 +1,182 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+class Flight {
+private:
+    string flightNo, departure, destination, date, time, arrival;
+    int capacity, reserved;
+
+public:
+    Flight(string flight, string dep, string des, string dt, string tm, string arr, int cap) {
+        flightNo = flight;
+        departure = dep;
+        destination = des;
+        date = dt;
+        time = tm;
+        arrival = arr;
+        capacity = cap;
+        reserved = 0;
+    }
+
+    bool reserve() {
+        if (reserved < capacity) {
+            reserved++;
+            return true;
+        }
+        return false;
+    }
+
+    
+    friend class ReservationSystem;
+};
+
+class ReservationSystem {
+public:
+    vector<Flight> flights;
+
+    void generateFlights() {
+        vector<string> departures = {"UAE", "UK", "USA", "Canada"};
+        vector<string> destinations = {"USA", "Canada", "UAE", "UK"};
+        vector<string> dates = {"2023-10-15", "2023-10-16", "2023-10-17"};
+        vector<string> times = {"10:00", "15:00", "09:00"};
+        int capacity = 100; 
+
+       
+        for (const auto& dep : departures) {
+            for (const auto& des : destinations) {
+                for (const auto& dt : dates) {
+                    for (const auto& tm : times) {
+                        string flightNo = "F" + to_string(flights.size() + 1); 
+                        flights.emplace_back(flightNo, dep, des, dt, tm, des, capacity);
+                    }
+                }
+            }
+        }
+
+        cout << "Flights generated successfully!" << endl;
+    }
+
+    void displayFlights() {
+        cout << setw(10) << "Flight No" << setw(15) << "Departure" << setw(15) << "Destination"
+             << setw(15) << "Date" << setw(10) << "Time" << setw(15) << "Arrival" << setw(15) << "Capacity" << setw(15) << "Reserved" << endl;
+        cout << string(100, '-') << endl;
+
+        for (const auto& flight : flights) {
+            cout << setw(10) << flight.flightNo << setw(15) << flight.departure << setw(15) << flight.destination
+                 << setw(15) << flight.date << setw(10) << flight.time << setw(15) << flight.arrival
+                 << setw(15) << flight.capacity << setw(15) << flight.reserved << endl;
+        }
+    }
+
+    void reserveSeat() {
+        string dep, des, dt, tm;
+        cout << "Choose Departure Location:\n1. UAE\n2. UK\n3. USA\n4. Canada\nEnter choice: ";
+        int depChoice;
+        cin >> depChoice;
+        switch (depChoice) {
+            case 1: dep = "UAE"; break;
+            case 2: dep = "UK"; break;
+            case 3: dep = "USA"; break;
+            case 4: dep = "Canada"; break;
+            default: cout << "Invalid choice." << endl; return;
+        }
+
+        cout << "Choose Destination:\n1. USA\n2. Canada\n3. UAE\n4. UK\nEnter choice: ";
+        int desChoice;
+        cin >> desChoice;
+        switch (desChoice) {
+            case 1: des = "USA"; break;
+            case 2: des = "Canada"; break;
+            case 3: des = "UAE"; break;
+            case 4: des = "UK"; break;
+            default: cout << "Invalid choice." << endl; return;
+        }
+
+        cout << "Choose Date:\n1. 2023-10-15\n2. 2023-10-16\n3. 2023-10-17\nEnter choice: ";
+        int dateChoice;
+        cin >> dateChoice;
+        switch (dateChoice) {
+            case 1: dt = "2023-10-15"; break;
+            case 2: dt = "2023-10-16"; break;
+            case 3: dt = "2023-10-17"; break;
+            default: cout << "Invalid choice." << endl; return;
+        }
+
+        cout << "Choose Time:\n1. 10:00\n2. 15:00\n3. 09:00\nEnter choice: ";
+        int timeChoice;
+        cin >> timeChoice;
+        switch (timeChoice) {
+            case 1: tm = "10:00"; break;
+            case 2: tm = "15:00"; break;
+            case 3: tm = "09:00"; break;
+            default: cout << "Invalid choice." << endl; return;
+        }
+
+        cout << "<<<<< Available Flights >>>>>" << endl << endl;
+        bool found = false;
+
+        for (const auto& flight : flights) {
+            if (flight.departure == dep && flight.destination == des && flight.date == dt && flight.time == tm) {
+                found = true;
+                cout << "Flight: " << flight.flightNo << endl;
+                cout << "Departure: " << flight.departure << endl;
+                cout << "Destination: " << flight.destination << endl;
+                cout << "Date: " << flight.date << endl;
+                cout << "Time: " << flight.time << endl;
+                cout << "Arrival: " << flight.arrival << endl;
+                cout << "Total Seats: " << flight.capacity << endl;
+                cout << "Reserved Seats: " << flight.reserved << endl << endl;
+            }
+        }
+
+        if (!found) {
+            cout << "No flights available for the specified criteria." << endl;
+            return;
+        }
+
+        string fn;
+        cout << "Enter Flight No to reserve a seat: "; cin >> fn;
+        for (auto& flight : flights) {
+            if (fn == flight.flightNo) {
+                if (flight.reserve()) {
+                    cout << "You have reserved a seat on flight: " << flight.flightNo << endl;
+                } else {
+                    cout << "Sorry! Seats not available:" << endl << endl;
+                }
+                return; 
+            }
+        }
+        cout << "Flight not found!" << endl; 
+    }
+};
+
+int main() {
+    ReservationSystem rs;
+    rs.generateFlights();
+
+    cout << "<<<<< VIP Airline >>>>>" << endl << endl;
+
+    while (true) {
+        int choice;
+        cout<<"\n-------------------------AIRLINE RESERVATION SYSTEM-------------------------";
+        cout << "\nEnter 1 to reserve a seat" << endl;
+        cout << "Enter 2 to display all flights" << endl;
+        cout << "Enter 0 to exit" << endl;
+        cout << "Enter choice: "; cin >> choice;
+
+        if (choice == 1) {
+            rs.reserveSeat();
+        } else if (choice == 2) {
+            rs.displayFlights();
+        } else if (choice == 0) {
+            return 0; 
+        } else {
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0; 
+}
